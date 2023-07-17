@@ -1,0 +1,8 @@
+.vscode/
+HAM10000_images_part_1/
+HAM10000_images_part_2/
+Normal_Skin/
+*.png
+*.h5
+*.zip
+*.csv
