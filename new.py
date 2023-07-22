@@ -6,7 +6,8 @@ from tensorflow.keras.layers import BatchNormalization
 import itertools
 from keras import backend as K
 from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPool2D
-# from imblearn.over_sampling import RandomOverSampler 
+
+# from imblearn.over_sampling import RandomOverSampler
 # from keras.models import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras.models import Sequential
@@ -168,6 +169,7 @@ lista3 = os.listdir("Normal_Skin/")
 
 IMG_SIZE = (100, 100)
 
+
 def get_resized_image(file_to_read):
     img = imread(file_to_read)
     img = resize(img, IMG_SIZE)
@@ -257,7 +259,7 @@ y_train = to_categorical(y, num_classes=num_classes)
 # x,y  = oversample.fit_resample(x,y)
 
 # x = np.array(x).reshape(-1,28,28,3)
-print('Shape of X :',x.shape)
+print("Shape of X :", x.shape)
 # x = (x-np.mean(x))/np.std(x)
 
 # split in 80% training and 20% test data
@@ -321,6 +323,9 @@ print(new_class_weights)
 batch_size = 32
 IMG_SIZE = 100
 input_shape = (IMG_SIZE, IMG_SIZE, 3)
+
+
+model = Sequential()
 
 
 def model_arch():
@@ -393,61 +398,46 @@ def model_arch():
 
     # [+] 8th output layer
     model.add(Dense(num_classes, activation="softmax"))
+    model.summary()
 
-model = Sequential(
-    [
-        layers.Conv2D(
-            filters=96,
-            kernel_size=(11, 11),
-            strides=(4, 4),
-            activation="relu",
-            input_shape=input_shape,
-        ),
-        layers.BatchNormalization(),
-        layers.MaxPool2D(pool_size=(3, 3), strides=(2, 2)),
-        layers.Conv2D(32, 3, padding='same'),
-        layers.BatchNormalization(),
-        layers.Activation('relu'),
-        layers.Conv2D(64, 3, padding="same"),
-        layers.BatchNormalization(),
-        layers.Activation("relu"),
-        layers.MaxPooling2D(),
-        layers.Conv2D(128, 3, padding="same"),
-        layers.BatchNormalization(),
-        layers.Activation("relu"),
-        layers.Conv2D(256, 3, padding="same"),
-        layers.BatchNormalization(),
-        layers.Activation("relu"),
-        layers.MaxPooling2D(),
-        layers.Flatten(),
-        layers.Dense(512),
-        layers.BatchNormalization(),
-        layers.Activation("relu"),
-        layers.Dropout(0.5),
-        layers.Dense(1024),
-        layers.BatchNormalization(),
-        layers.Activation("relu"),
-        layers.Dropout(0.5),
-        #
-        # layers.Conv2D(
-        #     96, (11, 11), strides=(4, 4), activation="relu", input_shape=input_shape
-        # ),
-        # layers.MaxPooling2D(pool_size=(3, 3)),
-        # layers.Conv2D(256, (5, 5), activation="relu"),
-        # layers.MaxPooling2D(pool_size=(3, 3)),
-        # layers.Conv2D(384, (3, 3), activation="relu"),
-        # layers.Flatten(),
-        # layers.Dense(1024, activation="relu"),
-        # layers.Dropout(0.5),
-        # layers.Dense(1024, activation="relu"),
-        # layers.Dropout(0.5),
-        #
-        layers.Dense(num_classes, activation="softmax"),
-    ]
-)
+
+# model = Sequential(
+#     [
+#         layers.experimental.preprocessing.Rescaling(1.0 / 255, input_shape=input_shape),
+#         layers.Conv2D(16, 3, padding="same"),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.Conv2D(32, 3, padding="same"),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.Conv2D(64, 3, padding="same"),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.MaxPooling2D(),
+#         layers.Conv2D(128, 3, padding="same"),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.Conv2D(256, 3, padding="same"),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.MaxPooling2D(),
+#         layers.Flatten(),
+#         layers.Dense(512),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.Dropout(0.5),
+#         layers.Dense(1024),
+#         layers.BatchNormalization(),
+#         layers.Activation("relu"),
+#         layers.Dropout(0.5),
+#         layers.Dense(num_classes, activation="softmax"),
+#     ]
+# )
+
+model_arch()
 
 # model.build(input_shape=input_shape)
-model.summary()
+# model.summary()
 print("\nNumber of classes", num_classes)
 
 
@@ -491,7 +481,7 @@ model.compile(
 
 datagen = ImageDataGenerator(zoom_range=0.2, horizontal_flip=True, shear_range=0.2)
 img = X_train[0]
-img = img.reshape(1, *img.shape)  
+img = img.reshape(1, *img.shape)
 datagen.fit(img)
 
 batch_size = 32  # samples in the network at once.
@@ -632,7 +622,7 @@ plt.show()
 
 acc_tot = []
 
-for i in range(7):
+for i in range(num_classes):
     acc_parz = round(np.mean(y_test2[y_test2 == i] == y_pred[y_test2 == i]), 2)
     lab_parz = lesion_names[i]
     print("accuracy for", lab_parz, "=", acc_parz)
